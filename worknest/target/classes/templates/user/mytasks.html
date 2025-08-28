@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<th:block th:replace="layout/header :: *"></th:block>
+
+<h2>My Tasks</h2>
+
+<table border="1" width="100%">
+    <tr>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    <tr th:each="t : ${tasks}">
+        <td th:text="${t.title}"></td>
+        <td th:text="${t.status}"></td>
+        <td>
+            <form th:action="@{'/user/tasks/' + ${t.id} + '/status'}" method="post">
+                <select name="status">
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="COMPLETED">Completed</option>
+                </select>
+                <button type="submit" class="btn">Update</button>
+            </form>
+            <a th:href="@{'/comments/' + ${t.id}}">Comments</a>
+        </td>
+    </tr>
+</table>
+
+<th:block th:replace="layout/footer :: *"></th:block>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<th:block th:replace="layout/header :: *"></th:block>
+
+	<h2>500 - Internal Server Error</h2>
+	<p th:text="${errorMessage}">Something went wrong. Please try again
+		later.</p>
+
+	<th:block th:replace="layout/footer :: *"></th:block>
+
+</body>
+</html>

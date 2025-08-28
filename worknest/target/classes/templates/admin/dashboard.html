@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<th:block th:replace="layout/header :: *"></th:block>
+
+	<h2>Admin Dashboard</h2>
+
+	<h3>All Tasks</h3>
+	<table border="1" width="100%">
+		<tr>
+			<th>Title</th>
+			<th>Status</th>
+			<th>Start Date</th>
+			<th>Due Date</th>
+		</tr>
+		<tr th:each="task : ${tasks}">
+			<td th:text="${task.title}"></td>
+			<td th:text="${task.status}"></td>
+			<td th:text="${task.startDate}"></td>
+			<td th:text="${task.dueDate}"></td>
+		</tr>
+	</table>
+
+	<th:block th:replace="layout/footer :: *"></th:block>
+
+</body>
+</html>

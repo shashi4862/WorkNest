@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<th:block th:replace="layout/header :: *"></th:block>
+
+<h2>Manage Tasks</h2>
+
+<form th:action="@{/admin/addTask}" method="post" th:object="${task}">
+    <label>Title:</label>
+    <input type="text" th:field="*{title}" required>
+    <label>Description:</label>
+    <input type="text" th:field="*{description}" required>
+    <label>Start Date:</label>
+    <input type="date" th:field="*{startDate}">
+    <label>Due Date:</label>
+    <input type="date" th:field="*{dueDate}">
+    <button type="submit" class="btn">Add Task</button>
+</form>
+
+<h3>Task List</h3>
+<table border="1" width="100%">
+    <tr>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Due Date</th>
+    </tr>
+    <tr th:each="t : ${tasks}">
+        <td th:text="${t.title}"></td>
+        <td th:text="${t.status}"></td>
+        <td th:text="${t.dueDate}"></td>
+    </tr>
+</table>
+
+<th:block th:replace="layout/footer :: *"></th:block>
+
+</body>
+</html>

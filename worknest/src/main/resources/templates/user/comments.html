@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<th:block th:replace="layout/header :: *"></th:block>
+
+	<h2>
+		Comments for Task: <span th:text="${task.title}"></span>
+	</h2>
+
+	<form th:action="@{'/comments/' + ${task.id} + '/add'}" method="post"
+		th:object="${comment}">
+		<textarea th:field="*{content}" placeholder="Write a comment..."
+			required></textarea>
+		<br>
+		<br>
+		<button type="submit" class="btn">Add Comment</button>
+	</form>
+
+	<h3>All Comments</h3>
+	<ul>
+		<li th:each="c : ${comments}"><b th:text="${c.user.name}"></b>: <span
+			th:text="${c.content}"></span> (<span th:text="${c.createdAt}"></span>)
+		</li>
+	</ul>
+
+	<th:block th:replace="layout/footer :: *"></th:block>
+
+</body>
+</html>
