@@ -7,7 +7,6 @@ import com.example.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @Controller
@@ -25,12 +24,17 @@ public class AdminController {
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         model.addAttribute("tasks", taskService.getAllTasks());
+        // Added model attributes for task and user forms, so the form can bind to them.
+        model.addAttribute("task", new Task());
+        model.addAttribute("user", new User());
         return "admin/dashboard";
     }
 
     @GetMapping("/users")
     public String usersPage(Model model) {
         model.addAttribute("users", userService.getAllUsers());
+        // Added the user model attribute for the form
+        model.addAttribute("user", new User());
         return "admin/users";
     }
 
@@ -43,6 +47,8 @@ public class AdminController {
     @GetMapping("/tasks")
     public String tasksPage(Model model) {
         model.addAttribute("tasks", taskService.getAllTasks());
+        // Added the task model attribute for the form
+        model.addAttribute("task", new Task());
         return "admin/tasks";
     }
 

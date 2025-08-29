@@ -1,25 +1,49 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<title>Login</title>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <!-- Links to Bootstrap CSS for a clean look -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-	<th:block th:replace="layout/header :: *"></th:block>
+    <!--
+        This is the correct way to include a fragment from another file.
+        It replaces the entire div tag with the content of the "main-header" fragment
+        from the file located at "layout/header.html".
+    -->
+    <div th:replace="~{layout/header :: main-header}"></div>
 
-	<h2>Login</h2>
-	<form th:action="@{/login}" method="post">
-		<label>Email:</label> <input type="text" name="username" required><br>
-		<br> <label>Password:</label> <input type="password"
-			name="password" required><br>
-		<br>
-		<button type="submit" class="btn">Login</button>
-	</form>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-lg p-4">
+                    <h2 class="card-title text-center mb-4">Login</h2>
+                    <form th:action="@{/login}" method="post">
+                        <div class="form-group">
+                            <label for="username">Email:</label>
+                            <input type="text" id="username" class="form-control" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" class="form-control" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block mt-4">Login</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p>Don't have an account? <a th:href="@{/register}">Register here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	<p>
-		Don't have an account? <a th:href="@{/register}">Register</a>
-	</p>
+    <!-- Correct way to include the footer fragment -->
+    <div th:replace="~{layout/footer :: main-footer}"></div>
 
-	<th:block th:replace="layout/footer :: *"></th:block>
-
+    <!-- Bootstrap JS for any interactive components (like the navigation toggler) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

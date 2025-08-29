@@ -1,41 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <title>Manage Tasks</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-	<th:block th:replace="layout/header :: *"></th:block>
+    <div th:replace="~{layout/header :: main-header}"></div>
+    <div class="container mt-4">
+        <h2 class="text-center mb-4">Manage Tasks</h2>
 
-<h2>Manage Tasks</h2>
+        <h3>Add a New Task</h3>
+        <form th:action="@{/admin/addTask}" method="post" th:object="${task}" class="mb-4">
+            <div class="form-group">
+                <label>Title:</label>
+                <input type="text" th:field="*{title}" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Description:</label>
+                <textarea th:field="*{description}" class="form-control" rows="3" required></textarea>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <label>Start Date:</label>
+                    <input type="date" th:field="*{startDate}" class="form-control">
+                </div>
+                <div class="col">
+                    <label>Due Date:</label>
+                    <input type="date" th:field="*{dueDate}" class="form-control">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success mt-3">Add Task</button>
+        </form>
 
-<form th:action="@{/admin/addTask}" method="post" th:object="${task}">
-    <label>Title:</label>
-    <input type="text" th:field="*{title}" required>
-    <label>Description:</label>
-    <input type="text" th:field="*{description}" required>
-    <label>Start Date:</label>
-    <input type="date" th:field="*{startDate}">
-    <label>Due Date:</label>
-    <input type="date" th:field="*{dueDate}">
-    <button type="submit" class="btn">Add Task</button>
-</form>
-
-<h3>Task List</h3>
-<table border="1" width="100%">
-    <tr>
-        <th>Title</th>
-        <th>Status</th>
-        <th>Due Date</th>
-    </tr>
-    <tr th:each="t : ${tasks}">
-        <td th:text="${t.title}"></td>
-        <td th:text="${t.status}"></td>
-        <td th:text="${t.dueDate}"></td>
-    </tr>
-</table>
-
-<th:block th:replace="layout/footer :: *"></th:block>
-
+        <h3>Task List</h3>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Due Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="t : ${tasks}">
+                        <td th:text="${t.title}"></td>
+                        <td th:text="${t.status}"></td>
+                        <td th:text="${t.dueDate}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div th:replace="~{layout/footer :: main-footer}"></div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
