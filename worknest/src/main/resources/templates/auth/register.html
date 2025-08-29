@@ -2,10 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Register</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <div th:replace="~{layout/header :: main-header}"></div>
@@ -33,12 +30,13 @@
                         </div>
                         <div class="form-group">
                             <label for="role">Role:</label>
-                            <select id="role" name="role" class="form-control" required>
+                            <select id="role" class="form-control" name="role" required>
                                 <option value="USER">User</option>
                                 <option value="ADMIN">Admin</option>
+                                <option value="LEADER">Leader</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-success btn-block mt-4">Register</button>
+                        <button type="submit" class="btn btn-primary btn-block mt-4">Register</button>
                     </form>
                     <div class="text-center mt-3">
                         <p>Already have an account? <a th:href="@{/login}">Login here</a></p>

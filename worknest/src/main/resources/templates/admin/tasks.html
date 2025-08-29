@@ -1,62 +1,70 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Manage Tasks</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Manage Tasks</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
     <div th:replace="~{layout/header :: main-header}"></div>
-    <div class="container mt-4">
-        <h2 class="text-center mb-4">Manage Tasks</h2>
+    <div class="container mt-5">
+        <h1 class="mb-4">Manage Tasks</h1>
 
-        <h3>Add a New Task</h3>
-        <form th:action="@{/admin/addTask}" method="post" th:object="${task}" class="mb-4">
-            <div class="form-group">
-                <label>Title:</label>
-                <input type="text" th:field="*{title}" class="form-control" required>
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">Add New Task</div>
+            <div class="card-body">
+                <form th:action="@{/admin/addTask}" method="post">
+                    <div class="form-group">
+                        <label for="title">Title:</label>
+                        <input type="text" id="title" name="title" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <textarea id="description" name="description" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" id="startDate" name="startDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dueDate">Due Date:</label>
+                        <input type="date" id="dueDate" name="dueDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status:</label>
+                        <select id="status" name="status" class="form-control">
+                            <option th:each="status : ${T(com.example.entity.TaskStatus).values()}" th:value="${status}" th:text="${status}"></option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Add Task</button>
+                </form>
             </div>
-            <div class="form-group">
-                <label>Description:</label>
-                <textarea th:field="*{description}" class="form-control" rows="3" required></textarea>
-            </div>
-            <div class="form-row">
-                <div class="col">
-                    <label>Start Date:</label>
-                    <input type="date" th:field="*{startDate}" class="form-control">
-                </div>
-                <div class="col">
-                    <label>Due Date:</label>
-                    <input type="date" th:field="*{dueDate}" class="form-control">
-                </div>
-            </div>
-            <button type="submit" class="btn btn-success mt-3">Add Task</button>
-        </form>
+        </div>
 
-        <h3>Task List</h3>
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Title</th>
-                        <th>Status</th>
-                        <th>Due Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="t : ${tasks}">
-                        <td th:text="${t.title}"></td>
-                        <td th:text="${t.status}"></td>
-                        <td th:text="${t.dueDate}"></td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">All Tasks</div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="task : ${tasks}">
+                            <td th:text="${task.title}"></td>
+                            <td th:text="${task.status}"></td>
+                            <td>
+                                <a th:href="@{/tasks/{id}(id=${task.id})}" class="btn btn-sm btn-info">View</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <div th:replace="~{layout/footer :: main-footer}"></div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

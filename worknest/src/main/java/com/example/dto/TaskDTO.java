@@ -2,7 +2,6 @@ package com.example.dto;
 
 import com.example.entity.TaskStatus;
 import lombok.*;
-
 import java.time.LocalDate;
 
 @Getter

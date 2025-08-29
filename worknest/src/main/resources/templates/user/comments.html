@@ -1,33 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <title>Task and Comments</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-	<th:block th:replace="layout/header :: *"></th:block>
+    <div th:replace="~{layout/header :: main-header}"></div>
+    <div class="container mt-5">
+        <h1 class="mb-4" th:text="${task.title}">Task Title</h1>
+        <p th:text="${task.description}">Task Description</p>
+        <p><strong>Status:</strong> <span th:text="${task.status}"></span></p>
+        <p><strong>Due Date:</strong> <span th:text="${task.dueDate}"></span></p>
 
-	<h2>
-		Comments for Task: <span th:text="${task.title}"></span>
-	</h2>
+        <hr>
 
-	<form th:action="@{'/comments/' + ${task.id} + '/add'}" method="post"
-		th:object="${comment}">
-		<textarea th:field="*{content}" placeholder="Write a comment..."
-			required></textarea>
-		<br>
-		<br>
-		<button type="submit" class="btn">Add Comment</button>
-	</form>
+        <h2>Comments</h2>
+        <ul class="list-group mb-4">
+            <li class="list-group-item" th:each="comment : ${comments}">
+                <strong th:text="${comment.userName}">User Name</strong>: <span th:text="${comment.content}">Comment content.</span>
+                <small class="float-right text-muted" th:text="${comment.createdAt}"></small>
+            </li>
+        </ul>
 
-	<h3>All Comments</h3>
-	<ul>
-		<li th:each="c : ${comments}"><b th:text="${c.user.name}"></b>: <span
-			th:text="${c.content}"></span> (<span th:text="${c.createdAt}"></span>)
-		</li>
-	</ul>
-
-	<th:block th:replace="layout/footer :: *"></th:block>
-
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">Add a Comment</div>
+            <div class="card-body">
+                <form th:action="@{/tasks/{id}/comments(id=${task.id})}" method="post">
+                    <div class="form-group">
+                        <textarea name="content" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-info">Submit Comment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{layout/footer :: main-footer}"></div>
 </body>
 </html>

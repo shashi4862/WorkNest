@@ -3,9 +3,7 @@ package com.example.service;
 import com.example.entity.Task;
 import com.example.entity.TaskStatus;
 import com.example.repository.TaskRepository;
-import com.example.service.TaskService;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service

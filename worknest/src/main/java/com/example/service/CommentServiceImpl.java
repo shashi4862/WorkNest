@@ -3,9 +3,7 @@ package com.example.service;
 import com.example.entity.Comment;
 import com.example.entity.Task;
 import com.example.repository.CommentRepository;
-import com.example.service.CommentService;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service

@@ -1,37 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <title>My Tasks</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-	<th:block th:replace="layout/header :: *"></th:block>
+    <div th:replace="~{layout/header :: main-header}"></div>
+    <div class="container mt-5">
+        <h1 class="mb-4">My Tasks</h1>
 
-<h2>My Tasks</h2>
-
-<table border="1" width="100%">
-    <tr>
-        <th>Title</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
-    <tr th:each="t : ${tasks}">
-        <td th:text="${t.title}"></td>
-        <td th:text="${t.status}"></td>
-        <td>
-            <form th:action="@{'/user/tasks/' + ${t.id} + '/status'}" method="post">
-                <select name="status">
-                    <option value="IN_PROGRESS">In Progress</option>
-                    <option value="COMPLETED">Completed</option>
-                </select>
-                <button type="submit" class="btn">Update</button>
-            </form>
-            <a th:href="@{'/comments/' + ${t.id}}">Comments</a>
-        </td>
-    </tr>
-</table>
-
-<th:block th:replace="layout/footer :: *"></th:block>
-
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">Assigned Tasks</div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Due Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="task : ${tasks}">
+                            <td th:text="${task.title}"></td>
+                            <td th:text="${task.status}"></td>
+                            <td th:text="${task.dueDate}"></td>
+                            <td>
+                                <a th:href="@{/tasks/{id}(id=${task.id})}" class="btn btn-sm btn-info">View</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{layout/footer :: main-footer}"></div>
 </body>
 </html>
