@@ -22,7 +22,7 @@ public class AuthService {
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
-                .password(request.getPassword()) // NOTE: should be hashed in real apps
+                .password(request.getPassword())
                 .role(request.getRole())
                 .build();
         return userRepository.save(user);

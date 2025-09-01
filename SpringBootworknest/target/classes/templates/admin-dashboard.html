@@ -148,7 +148,7 @@
                         <th>Task Title</th>
                         <th>Assigned To</th>
                         <th>Status</th>
-                        <th>Assigned At</th>
+                        
                     </tr>
                     </thead>
                     <tbody>
@@ -156,7 +156,7 @@
                         <td th:text="${assignment.task.title}"></td>
                         <td th:text="${assignment.user.name}"></td>
                         <td th:text="${assignment.status}"></td>
-                        <td th:text="${#temporals.format(assignment.assignedAt, 'dd-MM-yyyy HH:mm')}"></td>
+                        
                     </tr>
                     </tbody>
                 </table>
