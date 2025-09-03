@@ -53,7 +53,7 @@ public class AssignmentService {
     public List<TaskAssignment> getAssignmentsByUser(Long userId) {
         return taskAssignmentRepository.findByUserId(userId);
     }
-    
+
     public Optional<TaskAssignment> getAssignmentById(Long assignmentId) {
         return taskAssignmentRepository.findById(assignmentId);
     }
@@ -61,27 +61,40 @@ public class AssignmentService {
     public long countByStatus(TaskStatus status) {
         return taskAssignmentRepository.countByStatus(status);
     }
-    
+
     public void updateStatus(UpdateStatusRequest request) {
         TaskAssignment assignment = taskAssignmentRepository.findById(request.getAssignmentId())
                 .orElseThrow(() -> new RuntimeException("Task assignment not found"));
-        
+
         if (assignment.isLocked()) {
             throw new RuntimeException("Task is locked by admin and cannot be updated.");
         }
         if (assignment.isLeader() && assignment.getStatus() == TaskStatus.COMPLETED) {
             throw new RuntimeException("Leader cannot change the status of a completed task.");
         }
-        
+
+        // Update status of the individual assignment
         assignment.setStatus(request.getStatus());
         assignment.setUpdatedAt(LocalDateTime.now());
         taskAssignmentRepository.save(assignment);
 
+        // If leader, update the task and all assignments for this task
         if (assignment.isLeader()) {
-            taskService.updateTaskStatus(assignment.getTask().getId(), request.getStatus());
+            Task task = assignment.getTask();
+            task.setStatus(request.getStatus());
+            taskRepository.save(task);
+
+            List<TaskAssignment> allAssignments = taskAssignmentRepository.findByTaskId(task.getId());
+            for (TaskAssignment a : allAssignments) {
+                if (!a.isLeader()) { // Skip leader since already updated
+                    a.setStatus(request.getStatus());
+                    a.setUpdatedAt(LocalDateTime.now());
+                    taskAssignmentRepository.save(a);
+                }
+            }
         }
     }
-    
+
     public void lockTask(Long taskId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
