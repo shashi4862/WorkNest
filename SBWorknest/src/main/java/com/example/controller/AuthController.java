@@ -24,7 +24,7 @@ public class AuthController {
     @GetMapping("/login")
     public String showLoginForm(Model model, HttpSession session) {
         if (session.getAttribute("userId") != null) {
-            return "redirect:/";
+            return "redirect:/dashboard"; // Redirect to role-based dashboard
         }
         model.addAttribute("loginRequest", new LoginRequest());
         return "login";
@@ -35,9 +35,14 @@ public class AuthController {
         Optional<User> userOptional = authService.login(loginRequest);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
+
+            if (user.getId() == null) {
+                throw new RuntimeException("User has no ID. Did you save it in DB?");
+            }
+
             session.setAttribute("userId", user.getId());
             session.setAttribute("role", user.getRole());
-            
+
             if (user.getRole() == Role.ADMIN) {
                 return "redirect:/admin/dashboard";
             } else {

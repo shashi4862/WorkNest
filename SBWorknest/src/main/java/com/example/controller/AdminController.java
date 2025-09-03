@@ -1,7 +1,6 @@
 package com.example.controller;
 
 import com.example.dto.AssignTaskRequest;
-import com.example.dto.TaskRequest;
 import com.example.entity.User;
 import com.example.enums.Role;
 import com.example.enums.TaskStatus;
@@ -30,56 +29,85 @@ public class AdminController {
     private final CommentService commentService;
 
     @GetMapping("/dashboard")
-    public String adminDashboard(HttpSession session, Model model) {
-        if (!Role.ADMIN.equals(session.getAttribute("role"))) return "redirect:/login";
+    public String adminDashboard(Model model, HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        Object role = session.getAttribute("role");
+        if (userId == null) return "redirect:/login";
+        if (role == null || role != Role.ADMIN) return "redirect:/user/dashboard";
 
-        // Task stats
-        model.addAttribute("pendingCount", assignmentService.countByStatus(TaskStatus.PENDING));
-        model.addAttribute("inProgressCount", assignmentService.countByStatus(TaskStatus.IN_PROGRESS));
-        model.addAttribute("completedCount", assignmentService.countByStatus(TaskStatus.COMPLETED));
-        model.addAttribute("delayedCount", assignmentService.countByStatus(TaskStatus.DELAYED));
+        User currentUser = userService.getUserById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Users (exclude admin)
+        long pendingCount = assignmentService.countByStatus(TaskStatus.PENDING);
+        long inProgressCount = assignmentService.countByStatus(TaskStatus.IN_PROGRESS);
+        long completedCount = assignmentService.countByStatus(TaskStatus.COMPLETED);
+        long delayedCount = assignmentService.countByStatus(TaskStatus.DELAYED);
+
+        model.addAttribute("pendingCount", pendingCount);
+        model.addAttribute("inProgressCount", inProgressCount);
+        model.addAttribute("completedCount", completedCount);
+        model.addAttribute("delayedCount", delayedCount);
+
         List<User> nonAdminUsers = userService.getAllUsers().stream()
-                .filter(user -> !user.getRole().equals(Role.ADMIN))
+                .filter(user -> user.getRole() != Role.ADMIN)
                 .collect(Collectors.toList());
         model.addAttribute("users", nonAdminUsers);
-
-        // Assignments & comments
-        model.addAttribute("allAssignments", assignmentService.getAllAssignments());
+        model.addAttribute("allTasks", taskService.getAllTasks());
         model.addAttribute("comments", commentService.getAllComments());
 
         return "admin-dashboard";
     }
 
     @PostMapping("/assign-task")
-    public String assignTask(@ModelAttribute AssignTaskRequest request, HttpSession session, RedirectAttributes redirectAttrs) {
-        if (!Role.ADMIN.equals(session.getAttribute("role"))) return "redirect:/login";
+    public String assignTask(@ModelAttribute AssignTaskRequest request,
+                             HttpSession session,
+                             RedirectAttributes redirectAttrs) {
+        Long userId = (Long) session.getAttribute("userId");
+        Object role = session.getAttribute("role");
+        if (userId == null) return "redirect:/login";
+        if (role == null || role != Role.ADMIN) return "redirect:/user/dashboard";
 
-        Long adminId = (Long) session.getAttribute("userId");
-        User admin = userService.getUserById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        try {
+            if (request.getUserIds() == null || request.getUserIds().isEmpty()) {
+                redirectAttrs.addFlashAttribute("errorMessage", "Please select at least one user.");
+                return "redirect:/admin/dashboard";
+            }
+            if (request.getLeaderId() == null) {
+                redirectAttrs.addFlashAttribute("errorMessage", "Please select a leader.");
+                return "redirect:/admin/dashboard";
+            }
 
-        assignmentService.assignTaskManually(request, admin);
-        
-        redirectAttrs.addFlashAttribute("successMessage", "Task assigned successfully to selected users!");
+            User admin = userService.getUserById(userId)
+                    .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+            assignmentService.assignTaskManually(request, admin);
+            redirectAttrs.addFlashAttribute("successMessage", "Task assigned successfully to selected users!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttrs.addFlashAttribute("errorMessage", "Failed to assign task: " + e.getMessage());
+        }
         return "redirect:/admin/dashboard";
     }
-    
+
     @PostMapping("/lock-task")
-    public String lockTask(@RequestParam Long assignmentId, HttpSession session, RedirectAttributes redirectAttrs) {
-        if (!Role.ADMIN.equals(session.getAttribute("role"))) {
+    public String lockTask(@RequestParam Long taskId,
+                           HttpSession session,
+                           RedirectAttributes redirectAttrs) {
+        Long userId = (Long) session.getAttribute("userId");
+        Object role = session.getAttribute("role");
+        if (userId == null) return "redirect:/login";
+        if (role == null || role != Role.ADMIN) {
             redirectAttrs.addFlashAttribute("errorMessage", "Only administrators can lock tasks.");
-            return "redirect:/admin/dashboard";
+            return "redirect:/user/dashboard";
         }
-        
+
         try {
-            assignmentService.lockAssignment(assignmentId);
+            assignmentService.lockTask(taskId);
             redirectAttrs.addFlashAttribute("successMessage", "Task locked successfully.");
         } catch (RuntimeException e) {
+            e.printStackTrace();
             redirectAttrs.addFlashAttribute("errorMessage", e.getMessage());
         }
-        
         return "redirect:/admin/dashboard";
     }
 }

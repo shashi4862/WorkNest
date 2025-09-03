@@ -16,9 +16,9 @@ public class DashboardController {
         }
 
         if (role == Role.ADMIN) {
-            return "admin-dashboard";
+            return "redirect:/admin/dashboard";
         } else {
-            return "user-dashboard";
+            return "redirect:/user/dashboard";
         }
     }
 }

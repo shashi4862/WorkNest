@@ -14,23 +14,33 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public List<User> getAllUsers() {
+    public List<User> findAllUsers() {
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public Optional<User> getUserById(Long userId) {
+        return userRepository.findById(userId);
+    }
+    
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.findByName(username);
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
-
-    public User saveUser(User user) {
-        return userRepository.save(user);
-    }
-
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+    
+    // Updated authenticate method to not use PasswordEncoder
+    public User authenticate(String email, String password) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            // DIRECTLY compare the passwords (less secure)
+            if (password.equals(user.getPassword())) {
+                return user;
+            }
+        }
+        return null;
     }
 }

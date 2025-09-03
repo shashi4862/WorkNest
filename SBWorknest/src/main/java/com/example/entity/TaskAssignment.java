@@ -1,6 +1,5 @@
 package com.example.entity;
 
-
 import com.example.enums.TaskStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,6 +36,7 @@ public class TaskAssignment {
     private LocalDateTime assignedAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments;
+    // REMOVE THIS LINE: This relationship no longer exists in the Comment entity
+    // @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private List<Comment> comments;
 }

@@ -1,10 +1,10 @@
 package com.example.controller;
 
 import com.example.dto.UpdateStatusRequest;
-import com.example.entity.TaskAssignment;
 import com.example.entity.User;
 import com.example.service.AssignmentService;
 import com.example.service.CommentService;
+import com.example.service.TaskService;
 import com.example.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -13,23 +13,30 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-
 @Controller
-@RequestMapping("/user")
 @RequiredArgsConstructor
+@RequestMapping("/user")
 public class UserController {
 
     private final AssignmentService assignmentService;
     private final CommentService commentService;
     private final UserService userService;
+    private final TaskService taskService;
 
     @GetMapping("/dashboard")
-    public String userDashboard(HttpSession session, Model model) {
+    public String userDashboard(HttpSession session, Model model, RedirectAttributes redirectAttrs) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-        model.addAttribute("assignments", assignmentService.getAssignmentsByUser(userId));
+        try {
+            User user = userService.getUserById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found in DB with ID: " + userId));
+            model.addAttribute("assignments", assignmentService.getAssignmentsByUser(user.getId()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttrs.addFlashAttribute("errorMessage", "Failed to load user dashboard: " + e.getMessage());
+            return "redirect:/";
+        }
         return "user-dashboard";
     }
 
@@ -40,8 +47,13 @@ public class UserController {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-        assignmentService.updateStatus(request);
-        redirectAttrs.addFlashAttribute("successMessage", "Task status updated successfully!");
+        try {
+            assignmentService.updateStatus(request);
+            redirectAttrs.addFlashAttribute("successMessage", "Task status updated successfully!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttrs.addFlashAttribute("errorMessage", "Failed to update status: " + e.getMessage());
+        }
         return "redirect:/user/dashboard";
     }
 
@@ -53,13 +65,17 @@ public class UserController {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-        User user = userService.getUserById(userId).orElseThrow();
-        TaskAssignment assignment = assignmentService.getAssignmentsByUser(userId).stream()
-                .filter(a -> a.getId().equals(assignmentId))
-                .findFirst().orElseThrow();
-
-        commentService.addComment(assignment, user, content);
-        redirectAttrs.addFlashAttribute("successMessage", "Comment added successfully!");
+        try {
+            User user = userService.getUserById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found in DB with ID: " + userId));
+            var assignment = assignmentService.getAssignmentById(assignmentId)
+                    .orElseThrow(() -> new RuntimeException("Assignment not found with ID: " + assignmentId));
+            commentService.addComment(assignment.getTask(), user, content);
+            redirectAttrs.addFlashAttribute("successMessage", "Comment added successfully!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttrs.addFlashAttribute("errorMessage", "Failed to add comment: " + e.getMessage());
+        }
         return "redirect:/user/dashboard";
     }
 }

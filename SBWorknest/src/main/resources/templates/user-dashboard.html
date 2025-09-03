@@ -17,17 +17,9 @@
             max-height: 150px;
             overflow-y: auto;
         }
-        .comment-author {
-            font-weight: bold;
-            color: #0d6efd;
-        }
-        .input-group .form-control:focus {
-            box-shadow: none;
-        }
-        .input-group .btn-primary {
-            background-color: #0d6efd;
-            border-color: #0d6efd;
-        }
+        .comment-author { font-weight: bold; color: #0d6efd; }
+        .input-group .form-control:focus { box-shadow: none; }
+        .input-group .btn-primary { background-color: #0d6efd; border-color: #0d6efd; }
     </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -36,7 +28,6 @@
 <main class="container mt-4 flex-grow-1">
     <h2 class="text-center mb-4 fw-bold text-primary">My Assigned Tasks</h2>
 
-    <!-- Success/Error Message Display -->
     <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
         <span th:text="${successMessage}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -46,7 +37,6 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
-    <!-- Assigned Tasks Table -->
     <div class="card dashboard-card">
         <div class="card-header fw-bold text-primary">My Tasks</div>
         <div class="card-body">
@@ -68,14 +58,16 @@
                             <p class="mb-0" th:text="${a.task.description}"></p>
                         </td>
                         <td>
-                            <span class="badge" th:classappend="${a.status == T(com.example.enums.TaskStatus).PENDING ? 'bg-info' :
-                                                                  a.status == T(com.example.enums.TaskStatus).IN_PROGRESS ? 'bg-warning' :
-                                                                  a.status == T(com.example.enums.TaskStatus).COMPLETED ? 'bg-success' :
-                                                                  'bg-danger'}"
+                            <span class="badge"
+                                  th:classappend="${a.status == T(com.example.enums.TaskStatus).PENDING ? 'bg-info' :
+                                                   a.status == T(com.example.enums.TaskStatus).IN_PROGRESS ? 'bg-warning' :
+                                                   a.status == T(com.example.enums.TaskStatus).COMPLETED ? 'bg-success' :
+                                                   'bg-danger'}"
                                   th:text="${a.status}"></span>
                         </td>
                         <td>
                             <ul class="list-unstyled mb-0">
+                                <!-- FIX: Use taskAssignments instead of assignments -->
                                 <li th:each="member : ${a.task.assignments}">
                                     <span th:text="${member.user.name}"></span>
                                     <span th:if="${member.isLeader}" class="badge bg-primary">Leader</span>
@@ -99,17 +91,15 @@
                             <span th:if="${a.isLocked}" class="text-danger fw-bold">Locked by Admin</span>
                         </td>
                         <td>
-                            <!-- Comments List -->
-                            <!-- NOTE: The backend must ensure that 'a.comments' contains ALL comments for the task -->
                             <div class="comment-box mb-2">
-                                <div th:each="c : ${a.comments}" class="mb-1">
+                                <div th:each="c : ${a.task.comments}" class="mb-1">
                                     <span class="comment-author" th:text="${c.author.name} + ': '"></span>
                                     <span th:text="${c.content}"></span>
                                 </div>
-                                <div th:if="${#lists.isEmpty(a.comments)}" class="text-muted">No comments yet.</div>
+                                <div th:if="${#lists.isEmpty(a.task.comments)}" class="text-muted">No comments yet.</div>
                             </div>
-                            
-                            <!-- Comment Form -->
+
+                            <!-- FIX: keep assignmentId (controller expects it now) -->
                             <form th:action="@{/user/comment}" method="post">
                                 <input type="hidden" name="assignmentId" th:value="${a.id}" />
                                 <div class="input-group">

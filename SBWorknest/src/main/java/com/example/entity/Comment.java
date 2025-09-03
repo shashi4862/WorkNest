@@ -16,9 +16,10 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Change the relationship to point directly to the Task
     @ManyToOne
-    @JoinColumn(name = "assignment_id")
-    private TaskAssignment assignment;
+    @JoinColumn(name = "task_id")
+    private Task task;
 
     @ManyToOne
     @JoinColumn(name = "author_id")
@@ -29,4 +30,3 @@ public class Comment {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 }
-
